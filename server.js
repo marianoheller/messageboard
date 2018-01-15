@@ -1,13 +1,25 @@
 'use strict';
+require('dotenv').config();
 
 var express     = require('express');
 var bodyParser  = require('body-parser');
 var expect      = require('chai').expect;
 var cors        = require('cors');
+var mongoose    = require('mongoose');
 
 var apiRoutes         = require('./routes/api.js');
 var fccTestingRoutes  = require('./routes/fcctesting.js');
 var runner            = require('./test-runner');
+
+
+//Set up default mongoose connection
+mongoose.connect(process.env.MONGODB_URL, {
+  useMongoClient: true
+});
+// Get Mongoose to use the global promise library
+mongoose.Promise = global.Promise;
+//Bind connection to error event (to get notification of connection errors)
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 var app = express();
 
@@ -17,6 +29,16 @@ app.use(cors({origin: '*'})); //For FCC testing purposes only
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.get('/*',function(req,res,next) {
+  //Only allow your site to be loading in an iFrame on your own pages.
+  res.header('X-Frame-Options', 'SAMEORIGIN');
+  //Do not allow DNS prefetching
+  res.header('X-DNS-Prefetch-Control' , 'off');
+  //Only allow your site to send the referrer for your own pages.
+  res.header('Referrer-Policy', 'same-origin');
+  next();
+});
 
 //Sample front-end
 app.route('/b/:board/')
