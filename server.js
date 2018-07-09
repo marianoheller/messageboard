@@ -12,14 +12,15 @@ var fccTestingRoutes  = require('./routes/fcctesting.js');
 var runner            = require('./test-runner');
 
 
-//Set up default mongoose connection
-mongoose.connect(process.env.MONGODB_URL, {
-  useMongoClient: true
-});
-// Get Mongoose to use the global promise library
 mongoose.Promise = global.Promise;
-//Bind connection to error event (to get notification of connection errors)
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+mongoose.connect(process.env.MONGODB_URL,{
+  useNewUrlParser: true,
+  socketTimeoutMS: 10000,
+}).then(
+  () => { console.log("Connected to DB succesfully!") },
+  err => { console.log("Error connecting to the DB.", err.message); }
+);
+
 
 var app = express();
 

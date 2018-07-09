@@ -18,11 +18,30 @@ suite('Functional Tests', function() {
   suite('API ROUTING FOR /api/threads/:board', function() {
     
     suite('POST', function() {
-      
+      test('posting message', done => {
+        chai.request(server)
+        .post('/api/threads/testBoard')
+        .send({
+          text: '123',
+          delete_password: 'asd',
+        })
+        .end(function(err) {
+          assert(!Boolean(err), 'Error not null');
+          done();
+        })
+      })
     });
     
     suite('GET', function() {
-      
+      test('getting board', done => {
+        chai.request(server)
+        .get('/api/threads/testBoard')
+        .end(function(err) {
+          console.log(err);
+          assert(!Boolean(err), 'Error not null');
+          done();
+        })
+      })
     });
     
     suite('DELETE', function() {
