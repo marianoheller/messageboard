@@ -64,14 +64,21 @@ threadSchema.statics.reply = function reply(board, body ) {
 
 
 threadSchema.statics.getRecentThreads = function getRecentThreads(board) {
+  const filteredKeys = ['reported', 'delete_password'];
   return new Promise((resolve, reject) => {
-    this.find({ board }, (err, docs) => {
+    this.find({ board })
+    .populate('replies')
+    .exec((err, docs) => {
       if (err) reject(err);
       // Sort latest
       docs.sort( (a, b) => isBefore(a, b) ? -1 : 1);
       resolve(docs.slice(0, saltRounds).map(d => {
         let { replies } = d;
         if (replies) replies = d.replies.slice(0,3);
+        replies = replies.map(r => {
+          filteredKeys.forEach(k => r[k] = undefined);
+          return r;
+        });
         d.replies = replies;
         return d;
       }));

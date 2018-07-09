@@ -71,6 +71,7 @@ suite('Functional Tests', function() {
     
     suite('GET', function() {
       test('getting board', done => {
+        const filteredReplyKeys = ['reported', 'delete_password'];
         chai.request(server)
         .get(`/api/threads/${board}`)
         .end(function(err, res) {
@@ -82,6 +83,14 @@ suite('Functional Tests', function() {
                 t.hasOwnProperty(k),
                 `Object does not have the corresponding keys: ${k}, ${JSON.stringify(t)}`
               );
+            });
+            t.replies.forEach(r => {
+              filteredReplyKeys.forEach(k => {
+                assert(
+                  !r.hasOwnProperty(k),
+                  `Object MUST NOT have the corresponding key: ${k}, ${JSON.stringify(r)}`
+                );
+              });
             })
           })
           done();
