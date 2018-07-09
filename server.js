@@ -6,6 +6,7 @@ var bodyParser  = require('body-parser');
 var expect      = require('chai').expect;
 var cors        = require('cors');
 var mongoose    = require('mongoose');
+var morgan      = require('morgan');
 
 var apiRoutes         = require('./routes/api.js');
 var fccTestingRoutes  = require('./routes/fcctesting.js');
@@ -24,6 +25,7 @@ mongoose.connect(process.env.MONGODB_URL,{
 
 var app = express();
 
+app.use(morgan('combined'));
 app.use('/public', express.static(process.cwd() + '/public'));
 
 app.use(cors({origin: '*'})); //For FCC testing purposes only
